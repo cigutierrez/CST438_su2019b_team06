@@ -1,0 +1,1 @@
+json.(@customer, :id, :email, :lastName, :firstName, :lastOrder, :lastOrder2, :lastOrder3 )
