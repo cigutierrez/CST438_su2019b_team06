@@ -35,36 +35,34 @@ class OrdersController < ApplicationController
         if code != 200
             render json: { error: "Customer email not found. #{ params[:email]}" }, status: 400
             return
-        end 
-    
-    code, item = Item.getItemById (params[:itemId] ) 
-    if code != 200
-      render json: { error: "Item id not found. #{ params[:itemId] }" }, status: 400
-      return
-    end 
-    
-    if item[:stockQty] <= 0
-      render json: { error: "Item is out of stock." } , status: 400
-      return
-    end 
-      
-    @order.itemId = params[:itemId]
-    @order.description = item[:description]
-    @order.customerId = customer[:id]
-    @order.price = item[:price]
-    @order.award = customer[:award]
-    @order.total = @order.price - @order.award
-  
-    if @order.save
-      # put order to customer and item subsystem   
-      # to do their updates
-      code = Customer.putOrder( @order )
-      code = Item.putOrder( @order )
-      render json: @order, status: 201  
-    else
-      render json: @order.errors, status: 400  
+        end
+        
+        code, item = Item.getItemById (params[:itemId] )
+        if code != 200
+            render json: { error: "Item id not found. #{ params[:itemId] }" }, status: 400
+            return
+        end
+        
+        if item[:stockQty] <= 0
+            render json: { error: "Item is out of stock." } , status: 400
+            return
+        end
+        
+        @order.itemId = params[:itemId]
+        @order.description = item[:description]
+        @order.customerId = customer[:id]
+        @order.price = item[:price]
+        @order.award = customer[:award]
+        @order.total = @order.price - @order.award
+        
+        if @order.save
+            # put order to customer and item subsystem
+            # to do their updates
+            code = Customer.putOrder( @order )
+            code = Item.putOrder( @order )
+            render json: @order, status: 201
+        else
+            render json: @order.errors, status: 400
+        end
     end
-   
-  end
-
 end
